@@ -26,7 +26,7 @@ public class ReadProcess {
                 // Separa pelos Pipes |
                 String[] parts = line.split("\\|");
 
-                if (parts.length < 6) continue;
+                if (parts.length < 7) continue;
 
                 String id = parts[0].trim();
                 int entryTime = Integer.parseInt(parts[1].trim());
