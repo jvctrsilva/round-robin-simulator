@@ -19,7 +19,7 @@ public class ProcessData {
 
     @Override
     public String toString(){
-        return id + "Chegada: " + timeEnter + ", Tempo Execução: " + timeExecute + ", Tempo Restante: "
+        return id + " Chegada: " + timeEnter + ", Tempo Execução: " + timeExecute + ", Tempo Restante: "
                 + timeRemaining + ", Quantum Restante: " + quantumRemaining + ", Estado: " + state;
     }
 }

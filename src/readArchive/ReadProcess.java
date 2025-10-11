@@ -17,8 +17,6 @@ public class ReadProcess {
             while ((line = archive.readLine()) != null) {
                 line = line.trim();
 
-
-                System.out.println("Linha lida: " + line);
                 if (line.isEmpty()) continue;
 
                 if (header) {
@@ -29,7 +27,6 @@ public class ReadProcess {
                 String[] parts = line.split("\\|");
 
                 if (parts.length < 6) continue;
-                System.out.println("parts");
 
                 String id = parts[0].trim();
                 int timeEnter = Integer.parseInt(parts[1].trim());
@@ -40,14 +37,11 @@ public class ReadProcess {
 
                 ProcessData p = new ProcessData(id, timeEnter, timeExecute, timeRemaining, quantumRemaining, state);
                 process.add(p);
-                System.out.println("Processo adicionado: " + p);
-
 
             }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
-        }
-        System.out.println("Processos lidos: " + process.size());
+        };
         return process;
     }
 }
