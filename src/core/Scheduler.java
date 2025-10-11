@@ -15,6 +15,8 @@ public class Scheduler {
     //Auxiliares
     private final Map<String, Integer> cpuLeft = new HashMap<>(); // CPU restante por processo
     private final Set<String> arrivedProcesses = new HashSet<>();
+    private final Set<String> finished = new HashSet<>();
+    private final Map<String, Integer> blockLeft = new HashMap<>();
 
     public Scheduler(Clock clock, List<ProcessData> processes, int numCores){
         this.clock = clock;
@@ -31,6 +33,22 @@ public class Scheduler {
         }
     }
 
+    public void run() {
+        while (!allDone()) {
+            int t = clock.getGlobalTime();
+
+            injectArrivals(t);     // input -> ready
+            tickBlocked(t);        // atualiza bloqueios e move quem terminou para ready
+            assignIdleCores();     // ready -> cores ociosos (aplica CS + quantum)
+            tickCores();           // executa 1 tick em cada core (CS/execução/preempção/finish)
+
+            clock.advance();       // avança o relógio (tempo total inclui CS e ociosidade)
+        }
+    }
+
+    private boolean allDone() {
+        return finished.size() == processesList.size();
+    }
 
     // Conta as chegadas (Processo chegou)
     private void isArrived (int t){
@@ -41,4 +59,105 @@ public class Scheduler {
             }
         }
     }
+
+    /** Conta chegadas no tempo t e move para ready */
+    private void injectArrivals(int t){
+        for (ProcessData p : processesList) {
+            if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() == t) {
+                arrivedProcesses.add(p.getID());
+                readyProcessesList.add(p);
+            }
+        }
+    }
+
+    /** Se houver CPU livre e processos prontos, inicia execução aplicando CS e quantum */
+    private void assignIdleCores() {
+        Iterator<ProcessData> it = readyProcessesList.iterator();
+        for (CpuCore core : cores) {
+            if (!core.isIdle()) continue;
+            if (!it.hasNext()) break;
+
+            ProcessData next = it.next();
+            it.remove();
+
+            core.start(next.getID(), clock.getQuantum(), clock.getContextSwitchCost());
+        }
+    }
+
+    /** Executa 1 tick em cada core; finaliza, preempta e realoca quando necessário */
+    private void tickCores() {
+        for (CpuCore core : cores) {
+            String mark = core.tick(); // "CS", "-", ou ID
+
+            if ("CS".equals(mark) || "-".equals(mark)) {
+                // apenas consumiu troca de contexto ou está ocioso — nada a fazer
+                continue;
+            }
+
+            // Está executando 1 tick do processo 'pid'
+            String pid = mark;
+
+            // Consome 1 de CPU restante
+            int left = cpuLeft.get(pid) - 1;
+            cpuLeft.put(pid, left);
+
+            // 1) Terminou?
+            if (left <= 0) {
+                finished.add(pid);
+                core.free();
+                continue;
+            }
+
+            // 2) Quantum acabou? Preempção — devolve para PRONTO e libera o core
+            // 2) Quantum zerou?
+            if (core.getQuantumRemaining() == 0) {
+                ProcessData p = findById(pid);
+
+                // Se o processo é "bloqueável" e tem tempo de bloqueio, entra em BLOQUEADO
+                if (p.getBlocked() && p.getBlockedTime() > 0) {
+                    core.free();
+                    blockedProcessesList.add(p);
+                    blockLeft.put(pid, Math.max(1, p.getBlockedTime()));
+                } else {
+                    // Caso contrário, preempção normal: volta para PRONTO
+                    readyProcessesList.add(p);
+                    core.free();
+                }
+            }
+        }
+
+        // Depois das liberações/preempções, tentar alocar novamente ainda neste tick
+        assignIdleCores();
+    }
+
+    private void tickBlocked(int t) {
+        if (blockedProcessesList.isEmpty()) return;
+
+        List<ProcessData> toReady = new ArrayList<>();
+        for (ProcessData p : blockedProcessesList) {
+            String id = p.getID();
+            int left = blockLeft.getOrDefault(id, 0);
+            if (left > 0) {
+                left -= 1;
+                blockLeft.put(id, left);
+            }
+            if (left == 0) {
+                toReady.add(p);
+            }
+        }
+        // mover quem terminou o bloqueio para PRONTO
+        for (ProcessData p : toReady) {
+            blockedProcessesList.remove(p);
+            blockLeft.remove(p.getID());
+            readyProcessesList.add(p);
+        }
+    }
+
+
+    // ===== helpers =====
+    private ProcessData findById(String id) {
+        for (ProcessData p : processesList) if (p.getID().equals(id)) return p;
+        throw new IllegalStateException("Processo não encontrado: " + id);
+    }
 }
+
