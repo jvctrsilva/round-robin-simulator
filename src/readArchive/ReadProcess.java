@@ -29,13 +29,14 @@ public class ReadProcess {
                 if (parts.length < 6) continue;
 
                 String id = parts[0].trim();
-                int timeEnter = Integer.parseInt(parts[1].trim());
-                int timeExecute = Integer.parseInt(parts[2].trim());
-                int timeRemaining = Integer.parseInt(parts[3].trim());
-                int quantumRemaining = Integer.parseInt(parts[4].trim());
-                String state = parts[5].trim();
+                int entryTime = Integer.parseInt(parts[1].trim());
+                int executeTime = Integer.parseInt(parts[2].trim());
+                int remainingQuantum = Integer.parseInt(parts[3].trim());
+                String state = parts[4].trim();
+                Boolean blocked = Boolean.parseBoolean(parts[5].trim());
+                int blockedTime = Integer.parseInt(parts[6].trim());
 
-                ProcessData p = new ProcessData(id, timeEnter, timeExecute, timeRemaining, quantumRemaining, state);
+                ProcessData p = new ProcessData(id, entryTime, executeTime, remainingQuantum, state, blocked, blockedTime );
                 process.add(p);
 
             }

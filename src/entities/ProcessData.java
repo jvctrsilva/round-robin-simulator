@@ -1,26 +1,29 @@
 package entities;
 
 public class ProcessData {
-    private String id;
-    private int timeEnter;
-    private int timeExecute;
-    private int timeRemaining;
+    private String ID;
+    private int entryTime;
+    private int executeTime;
     private int quantumRemaining;
     private String state;
+    private Boolean blocked;
+    private int blockedTime;
 
-    public ProcessData(String id, int timeEnter, int timeExecute, int timeRemaining, int quantumRemaining, String state){
-        this.id = id;
-        this.timeEnter = timeEnter;
-        this.timeExecute = timeExecute;
-        this.timeRemaining = timeRemaining;
+
+    public ProcessData(String ID, int entryTime, int executeTime, int quantumRemaining, String state, Boolean blocked, int blockedTime) {
+        this.ID = ID;
+        this.entryTime = entryTime;
+        this.executeTime = executeTime;
         this.quantumRemaining = quantumRemaining;
         this.state = state;
+        this.blocked = blocked;
+        this.blockedTime = blockedTime;
     }
 
     @Override
     public String toString(){
-        return id + " Chegada: " + timeEnter + ", Tempo Execução: " + timeExecute + ", Tempo Restante: "
-                + timeRemaining + ", Quantum Restante: " + quantumRemaining + ", Estado: " + state;
+        return ID + " Chegada: " + entryTime + ", Tempo Execução: " + executeTime + ", Quantum Restante: "
+        + quantumRemaining + ", Estado: " + state + ", Bloqueado?: " + blocked + ", Tempo Bloqueado: " + blockedTime;
     }
 }
 
