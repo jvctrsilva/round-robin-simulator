@@ -20,6 +20,20 @@ public class ProcessData {
         this.blockedTime = blockedTime;
     }
 
+    public Boolean getBlocked() {return blocked;}
+
+    public int getBlockedTime() {return blockedTime;}
+
+    public int getEntryTime() {return entryTime;}
+
+    public int getExecuteTime() {return executeTime;}
+
+    public String getID() {return ID;}
+
+    public int getQuantumRemaining() {return quantumRemaining;}
+
+    public String getState() {return state;}
+
     @Override
     public String toString(){
         return ID + " Chegada: " + entryTime + ", Tempo Execução: " + executeTime + ", Quantum Restante: "
