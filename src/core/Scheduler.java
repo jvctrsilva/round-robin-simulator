@@ -1,5 +1,6 @@
 package core;
 
+import Quantum.QuantumPolicy;
 import entities.ProcessData;
 
 import java.util.*;
@@ -7,6 +8,7 @@ import java.util.*;
 public class Scheduler {
     private Clock clock;
     private List<CpuCore> cores;
+    private final QuantumPolicy quantumPolicy;
 
     private List<ProcessData> processesList;
     private List<ProcessData> blockedProcessesList;
@@ -20,7 +22,7 @@ public class Scheduler {
 
     private final List<List<String>> gantt = new ArrayList<>();
 
-    public Scheduler(Clock clock, List<ProcessData> processes, int numCores){
+    public Scheduler(Clock clock, List<ProcessData> processes, int numCores, QuantumPolicy policy) {
         this.clock = clock;
         this.processesList = processes;
         this.cores = new ArrayList<>();
@@ -28,6 +30,7 @@ public class Scheduler {
             cores.add(new CpuCore(i));
             gantt.add(new ArrayList<>()); // cria a linha para cada core
         }
+        this.quantumPolicy = policy;
         this.readyProcessesList   = new ArrayList<>();
         this.blockedProcessesList = new ArrayList<>();
 
@@ -67,6 +70,9 @@ public class Scheduler {
     // Se houver CPU livre e processos prontos, inicia execução aplicando CS e quantum
     private void assignIdleCores() {
         Iterator<ProcessData> it = readyProcessesList.iterator();
+        int running = 0;
+        for (CpuCore c: cores) if (!c.isIdle()) running++; // Quantidade de cores que estão ativas
+
         for (CpuCore core : cores) {
             if (!core.isIdle()) continue;
             if (!it.hasNext()) break;
@@ -74,7 +80,9 @@ public class Scheduler {
             ProcessData next = it.next();
             it.remove();
 
-            core.start(next.getID(), clock.getQuantum(), clock.getContextSwitchCost());
+            int q = quantumPolicy.nextQuantum(readyProcessesList.size(), running);
+            core.start(next.getID(), q, clock.getContextSwitchCost());
+            running++;
         }
     }
 
