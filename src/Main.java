@@ -1,4 +1,4 @@
-import Quantum.QuantumPolicy;
+import quantum.QuantumPolicy;
 import core.Clock;
 import core.Scheduler;
 import entities.ProcessData;

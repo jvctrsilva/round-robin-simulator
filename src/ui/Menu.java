@@ -2,9 +2,9 @@ package ui;
 
 import java.util.Scanner;
 
-import Quantum.DynamicQuantum;
-import Quantum.FixedQuantum;
-import Quantum.QuantumPolicy;
+import quantum.DynamicQuantum;
+import quantum.FixedQuantum;
+import quantum.QuantumPolicy;
 
 public class Menu {
 
