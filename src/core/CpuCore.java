@@ -20,7 +20,7 @@ public class CpuCore {
     public int getQuantumRemaining() {return quantumRemaining;}
     public int getExecutionTime() {return executionTime;}
 
-    public boolean isIdle(){return runningId == null & quantumRemaining == 0 & contextSwitchLeft == 0;}
+    public boolean isIdle(){return runningId == null && quantumRemaining == 0 && contextSwitchLeft == 0;}
     public boolean inContextSwitch(){return contextSwitchLeft > 0;}
 
     // Inicia (ou recomeça) um processo no núcleo, aplicando custo de troca de contexto e quantum atual

@@ -50,16 +50,6 @@ public class Scheduler {
         return finished.size() == processesList.size();
     }
 
-    // Conta as chegadas (Processo chegou)
-    private void isArrived (int t){
-        for(ProcessData p : processesList){
-            if(!arrivedProcesses.contains(p.getID()) & p.getEntryTime() == t){
-                arrivedProcesses.add(p.getID());
-                readyProcessesList.add(p);
-            }
-        }
-    }
-
     // Conta chegadas no tempo t e move para ready
     private void injectArrivals(int t){
         for (ProcessData p : processesList) {
