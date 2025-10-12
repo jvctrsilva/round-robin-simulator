@@ -18,12 +18,15 @@ public class Scheduler {
     private final Set<String> finished = new HashSet<>();           // Processos finalizados
     private final Map<String, Integer> blockLeft = new HashMap<>(); // Bloqueados restantes
 
+    private final List<List<String>> gantt = new ArrayList<>();
+
     public Scheduler(Clock clock, List<ProcessData> processes, int numCores){
         this.clock = clock;
         this.processesList = processes;
         this.cores = new ArrayList<>();
         for(int i = 0; i < numCores; i++){
             cores.add(new CpuCore(i));
+            gantt.add(new ArrayList<>()); // cria a linha para cada core
         }
         this.readyProcessesList   = new ArrayList<>();
         this.blockedProcessesList = new ArrayList<>();
@@ -44,20 +47,11 @@ public class Scheduler {
 
             clock.advance();       // avança o relógio (tempo total inclui CS e ociosidade)
         }
+        printGantt();
     }
 
     private boolean allDone() {
         return finished.size() == processesList.size();
-    }
-
-    // Conta as chegadas (Processo chegou)
-    private void isArrived (int t){
-        for(ProcessData p : processesList){
-            if(!arrivedProcesses.contains(p.getID()) & p.getEntryTime() == t){
-                arrivedProcesses.add(p.getID());
-                readyProcessesList.add(p);
-            }
-        }
     }
 
     // Conta chegadas no tempo t e move para ready
@@ -88,6 +82,7 @@ public class Scheduler {
     private void tickCores() {
         for (CpuCore core : cores) {
             String mark = core.tick(); // "CS", "-", ou ID
+            gantt.get(core.getId()).add(mark); // registra no Gantt deste core
 
             if ("CS".equals(mark) || "-".equals(mark)) {
                 // apenas consumiu troca de contexto ou está ocioso — nada a fazer
@@ -152,7 +147,20 @@ public class Scheduler {
             readyProcessesList.add(p);
         }
     }
-
+    private void printGantt() {
+        System.out.println("\n=== GANTT ===");
+        for (int c = 0; c < gantt.size(); c++) {
+            System.out.print("Core " + c + ": ");
+            for (String s : gantt.get(c)) System.out.print("| " + s + " ");
+            System.out.println("|");
+        }
+        // linha do tempo (assume pelo menos 1 core)
+        if (!gantt.isEmpty()) {
+            System.out.print("Tempo : ");
+            for (int t = 0; t < gantt.get(0).size(); t++) System.out.print(t + "   ");
+            System.out.println();
+        }
+    }
 
     // ===== Métodos auxiliares =====
     private ProcessData findById(String id) {
