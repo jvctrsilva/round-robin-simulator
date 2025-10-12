@@ -1,0 +1,4 @@
+id|entryTime|executeTime|remainingQuantum|state|blocked?|blockedTime
+P1|0|24|0|PRONTO|false|0
+P2|0|3|0|PRONTO|false|0
+P3|0|3|0|PRONTO|false|0

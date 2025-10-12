@@ -1,6 +1,6 @@
 package core;
 
-import Quantum.QuantumPolicy;
+import quantum.QuantumPolicy;
 import entities.ProcessData;
 
 import java.util.*;
@@ -80,7 +80,7 @@ public class Scheduler {
             ProcessData next = it.next();
             it.remove();
 
-            int q = quantumPolicy.nextQuantum(readyProcessesList.size(), running);
+            int q = quantumPolicy.nextQuantum(readyProcessesList.size(),running);
             core.start(next.getID(), q, clock.getContextSwitchCost());
             running++;
         }
