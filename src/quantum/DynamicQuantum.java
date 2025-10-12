@@ -1,4 +1,4 @@
-package Quantum;
+package quantum;
 
 public class DynamicQuantum implements QuantumPolicy {
     private final int base;

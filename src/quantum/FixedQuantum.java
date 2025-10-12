@@ -1,4 +1,4 @@
-package Quantum;
+package quantum;
 
 public class FixedQuantum  implements QuantumPolicy {
 
