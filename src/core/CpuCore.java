@@ -6,7 +6,7 @@ public class CpuCore {
     private int quantumRemaining;
     private int contextSwitchLeft;
 
-    private int executionTime; // Tempo de execucao total (ver qual CPU ira ser chamada)
+    private int executionTime; // Tempo de execucao total (ver qual CPU irá ser chamada)
 
     public CpuCore(int id) {
         this.id = id;
@@ -23,13 +23,13 @@ public class CpuCore {
     public boolean isIdle(){return runningId == null & quantumRemaining == 0 & contextSwitchLeft == 0;}
     public boolean inContextSwitch(){return contextSwitchLeft > 0;}
 
-    /** Inicia (ou recomeça) um processo no núcleo, aplicando custo de troca de contexto e quantum atual */
+    // Inicia (ou recomeça) um processo no núcleo, aplicando custo de troca de contexto e quantum atual
     public void start(String processId, int quantum, int ContextSwitchCost) {
         this.runningId = processId;
         this.quantumRemaining = quantum;
         this.contextSwitchLeft = ContextSwitchCost;
     }
-    /** Libera o núcleo (sem processo) */
+    // Libera o núcleo (sem processo)
     public void free(){
         runningId = null;
         quantumRemaining = 0;

@@ -12,11 +12,11 @@ public class Scheduler {
     private List<ProcessData> blockedProcessesList;
     private List<ProcessData> readyProcessesList;
 
-    //Auxiliares
-    private final Map<String, Integer> cpuLeft = new HashMap<>(); // CPU restante por processo
-    private final Set<String> arrivedProcesses = new HashSet<>();
-    private final Set<String> finished = new HashSet<>();
-    private final Map<String, Integer> blockLeft = new HashMap<>();
+    //Atributos auxiliares
+    private final Map<String, Integer> cpuLeft = new HashMap<>();   // CPU restante por processo
+    private final Set<String> arrivedProcesses = new HashSet<>();   // Processos que chegaram
+    private final Set<String> finished = new HashSet<>();           // Processos finalizados
+    private final Map<String, Integer> blockLeft = new HashMap<>(); // Bloqueados restantes
 
     public Scheduler(Clock clock, List<ProcessData> processes, int numCores){
         this.clock = clock;
@@ -60,7 +60,7 @@ public class Scheduler {
         }
     }
 
-    /** Conta chegadas no tempo t e move para ready */
+    // Conta chegadas no tempo t e move para ready
     private void injectArrivals(int t){
         for (ProcessData p : processesList) {
             if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() == t) {
@@ -70,7 +70,7 @@ public class Scheduler {
         }
     }
 
-    /** Se houver CPU livre e processos prontos, inicia execução aplicando CS e quantum */
+    // Se houver CPU livre e processos prontos, inicia execução aplicando CS e quantum
     private void assignIdleCores() {
         Iterator<ProcessData> it = readyProcessesList.iterator();
         for (CpuCore core : cores) {
@@ -84,7 +84,7 @@ public class Scheduler {
         }
     }
 
-    /** Executa 1 tick em cada core; finaliza, preempta e realoca quando necessário */
+    // Executa 1 tick em cada core; finaliza, preempta e realoca quando necessário
     private void tickCores() {
         for (CpuCore core : cores) {
             String mark = core.tick(); // "CS", "-", ou ID
@@ -154,10 +154,9 @@ public class Scheduler {
     }
 
 
-    // ===== helpers =====
+    // ===== Métodos auxiliares =====
     private ProcessData findById(String id) {
         for (ProcessData p : processesList) if (p.getID().equals(id)) return p;
         throw new IllegalStateException("Processo não encontrado: " + id);
     }
 }
-
