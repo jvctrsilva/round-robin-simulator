@@ -34,6 +34,8 @@ public class ProcessData {
 
     public String getState() {return state;}
 
+    public void setState(String state) { this.state = state; }
+
     @Override
     public String toString(){
         return ID + " Chegada: " + entryTime + ", Tempo Execução: " + executeTime + ", Quantum Restante: "
