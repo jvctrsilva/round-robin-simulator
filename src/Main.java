@@ -12,14 +12,14 @@ public class Main {
         String path = "src/readArchive/processos.txt";
         List<ProcessData> procs = ReadProcess.readProcess(path);
 
-        Clock clock = new Clock(0, 1, 1, 3);
+        Clock clock = new Clock(0, 1, 4, 8);
 
         // Quantum Fixo
         QuantumPolicy policy = new FixedQuantum(clock.getQuantum());
         // Quantum dinâmico
 //         QuantumPolicy policy = new DynamicQuantum(clock.getQuantum());
 
-        int numCores = 1; // múltiplos núcleos
+        int numCores = 2; // múltiplos núcleos
         Scheduler scheduler = new Scheduler(clock, procs, numCores, policy);
         scheduler.run();
 

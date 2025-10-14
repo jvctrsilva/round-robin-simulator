@@ -1,5 +1,5 @@
 package Quantum;
 
 public interface QuantumPolicy {
-     int nextQuantum(int readySize, int runningCores);
+    int nextQuantum(int readySize, int runningCores);
 }

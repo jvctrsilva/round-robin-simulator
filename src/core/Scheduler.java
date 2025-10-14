@@ -103,7 +103,7 @@ public class Scheduler {
 
             ProcessData next = it.next();
             it.remove();
-
+            System.out.println(readyProcessesList.size());
             int q = quantumPolicy.nextQuantum(readyProcessesList.size(), running);
             sys.sumAssignedQuantum += q;
             sys.countAssignedQuantum++;
