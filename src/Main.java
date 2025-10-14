@@ -1,6 +1,5 @@
-import Quantum.DynamicQuantum;
-import Quantum.FixedQuantum;
-import Quantum.QuantumPolicy;
+import quantum.FixedQuantum;
+import quantum.QuantumPolicy;
 import core.Clock;
 import core.Scheduler;
 import entities.ProcessData;

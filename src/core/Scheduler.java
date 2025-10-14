@@ -1,6 +1,6 @@
 package core;
 
-import Quantum.QuantumPolicy;
+import quantum.QuantumPolicy;
 import entities.ProcessData;
 
 import java.util.*;
