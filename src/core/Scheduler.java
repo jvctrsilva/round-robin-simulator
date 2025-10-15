@@ -18,8 +18,7 @@ public class Scheduler {
 
     private final ConcurrentLinkedQueue<ProcessData> incoming = new ConcurrentLinkedQueue<>();
     private final AtomicInteger nextPidNumber = new AtomicInteger(1); // inicia no construtor
-    private int lastNewProcTick = -1;
-    private final int idleWindowTicks = 50; // aguarda até 50 ticks por novas requisições antes de encerrar
+
 
     //Atributos auxiliares
     private final Map<String, Integer> cpuLeft = new HashMap<>();   // CPU restante por processo
@@ -91,36 +90,13 @@ public class Scheduler {
                 readyProcessesList.add(p);
             }
         }
-        if (gotAny) lastNewProcTick = tNow;
     }
 
     private boolean allDone() {
         return finished.size() == processesList.size();
     }
 
-    // critério de parada “esperto”:
-    private boolean shouldStop(int t) {
-        boolean noReady = readyProcessesList.isEmpty();
-        boolean noBlocked = blockedProcessesList.isEmpty();
-        boolean allCoresIdle = true;
-        for (CpuCore c : cores) { if (!c.isIdle()) { allCoresIdle = false; break; } }
 
-        boolean hasFutureKnown = false;
-        for (ProcessData p : processesList) {
-            if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() > t) { hasFutureKnown = true; break; }
-        }
-
-        // Nunca recebemos entradas dinâmicas? critério clássico
-        if (lastNewProcTick < 0) {
-            return noReady && noBlocked && allCoresIdle && !hasFutureKnown;
-        }
-        // Com entradas dinâmicas: espere uma janela de ociosidade
-        if (noReady && noBlocked && allCoresIdle && !hasFutureKnown) {
-            int last = Math.max(0, lastNewProcTick);
-            return (t - last) >= idleWindowTicks;
-        }
-        return false;
-    }
 
     // Conta chegadas no tempo t e move para ready
     private void injectArrivals(int t){

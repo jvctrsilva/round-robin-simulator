@@ -28,7 +28,7 @@ public class Menu {
         Config cfg = new Config();
 
         System.out.println("==== Round Robin Simulator ====");
-        // Caminho do arquivo: hardcoded (padrão)
+        // Caminho do arquivo
         cfg.filePath = "src/readArchive/processos.txt";
 
         // Núcleos

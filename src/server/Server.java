@@ -12,8 +12,8 @@ public class Server implements AutoCloseable {
     private final int port;
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private volatile boolean running = false;
-    private volatile Scheduler scheduler;             // será setado depois
-    private final Queue<ProcessRequest> buffer = new ConcurrentLinkedQueue<>(); // buffer antes do scheduler
+    private volatile Scheduler scheduler;
+    private final Queue<ProcessRequest> buffer = new ConcurrentLinkedQueue<>();
     private ServerSocket server;
 
     public Server(int port) {

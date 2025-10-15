@@ -17,9 +17,5 @@ public class Clock {
 
     public int getGlobalTime() {return globalTime;}
 
-    public int getQuantum() {return quantum;}
-
-    public int getTick() {return tick;}
-
     public void advance() { globalTime += tick; }
 }

@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // 1) Inicia o servidor (intake por socket) – porta 12345
+        // 1) Inicia o servidor
         Server server = new Server(12345);
         server.start();
 
@@ -22,7 +22,7 @@ public class Main {
         List<ProcessData> base = ReadProcess.readProcess(baseFile);
         int nextPid = computeNextPidNumber(base);
 
-        // coleta no console (opcional)
+        // coleta no console
         collectAndAppendExtras(baseFile, nextPid);
 
         // 3) Solicita o Menu com os parâmetros
@@ -45,7 +45,6 @@ public class Main {
         // 7) Finaliza servidor e imprime resumo
         server.close();
         System.out.println("Tempo total simulado: " + clock.getGlobalTime());
-        System.out.println("OK");
     }
 
     // ===== Helpers =====
