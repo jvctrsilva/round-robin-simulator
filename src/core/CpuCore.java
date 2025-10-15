@@ -15,6 +15,7 @@ public class CpuCore {
         this.contextSwitchLeft = 0;
         this.executionTime = 0;
     }
+
     public int getId() {return id;}
     public int getQuantumRemaining() {return quantumRemaining;}
 
@@ -46,7 +47,7 @@ public class CpuCore {
             return "CS";
         }
         if (runningId == null) {
-            return "-";
+            return "--";
         }
         if (quantumRemaining > 0) quantumRemaining--;
         return runningId;
