@@ -4,6 +4,8 @@ import quantum.QuantumPolicy;
 import entities.ProcessData;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Scheduler {
     private Clock clock;
@@ -13,6 +15,11 @@ public class Scheduler {
     private List<ProcessData> processesList;
     private List<ProcessData> blockedProcessesList;
     private List<ProcessData> readyProcessesList;
+
+    private final ConcurrentLinkedQueue<ProcessData> incoming = new ConcurrentLinkedQueue<>();
+    private final AtomicInteger nextPidNumber = new AtomicInteger(1); // inicia no construtor
+    private int lastNewProcTick = -1;
+    private final int idleWindowTicks = 50; // aguarda até 50 ticks por novas requisições antes de encerrar
 
     //Atributos auxiliares
     private final Map<String, Integer> cpuLeft = new HashMap<>();   // CPU restante por processo
@@ -37,11 +44,29 @@ public class Scheduler {
         for (ProcessData p : processesList) {
             cpuLeft.put(p.getID(), p.getExecuteTime());
         }
+
+        int max = 0;
+        for (ProcessData p : processesList) {
+            String id = p.getID();
+            int n = extractTrailingNumber(id);
+            if (n > max) max = n;
+            cpuLeft.put(p.getID(), p.getExecuteTime());
+        }
+        nextPidNumber.set(max + 1);
     }
+
+    public void submit(int entryTime, int executeTime, boolean blocked, int blockedTime) {
+        String id = "P" + nextPidNumber.getAndIncrement();
+        ProcessData p = new ProcessData(id, entryTime, executeTime, 0, "PRONTO", blocked, blockedTime);
+        incoming.add(p);
+    }
+
 
     public void run() {
         while (!allDone()) {
             int t = clock.getGlobalTime();
+
+            drainIncomingQueue(t);
 
             injectArrivals(t);     // input -> ready
             tickBlocked(t);        // atualiza bloqueios e move quem terminou para ready
@@ -49,12 +74,52 @@ public class Scheduler {
             tickCores();           // executa 1 tick em cada core (CS/execução/preempção/finish)
 
             clock.advance();       // avança o relógio (tempo total inclui CS e ociosidade)
+
         }
         printGantt();
     }
 
+    // drenar a fila:
+    private void drainIncomingQueue(int tNow) {
+        boolean gotAny = false;
+        for (ProcessData p; (p = incoming.poll()) != null; ) {
+            gotAny = true;
+            processesList.add(p);
+            cpuLeft.put(p.getID(), p.getExecuteTime());
+            if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() <= tNow) {
+                arrivedProcesses.add(p.getID());
+                readyProcessesList.add(p);
+            }
+        }
+        if (gotAny) lastNewProcTick = tNow;
+    }
+
     private boolean allDone() {
         return finished.size() == processesList.size();
+    }
+
+    // critério de parada “esperto”:
+    private boolean shouldStop(int t) {
+        boolean noReady = readyProcessesList.isEmpty();
+        boolean noBlocked = blockedProcessesList.isEmpty();
+        boolean allCoresIdle = true;
+        for (CpuCore c : cores) { if (!c.isIdle()) { allCoresIdle = false; break; } }
+
+        boolean hasFutureKnown = false;
+        for (ProcessData p : processesList) {
+            if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() > t) { hasFutureKnown = true; break; }
+        }
+
+        // Nunca recebemos entradas dinâmicas? critério clássico
+        if (lastNewProcTick < 0) {
+            return noReady && noBlocked && allCoresIdle && !hasFutureKnown;
+        }
+        // Com entradas dinâmicas: espere uma janela de ociosidade
+        if (noReady && noBlocked && allCoresIdle && !hasFutureKnown) {
+            int last = Math.max(0, lastNewProcTick);
+            return (t - last) >= idleWindowTicks;
+        }
+        return false;
     }
 
     // Conta chegadas no tempo t e move para ready
@@ -174,5 +239,14 @@ public class Scheduler {
     private ProcessData findById(String id) {
         for (ProcessData p : processesList) if (p.getID().equals(id)) return p;
         throw new IllegalStateException("Processo não encontrado: " + id);
+    }
+
+    private int extractTrailingNumber(String id) {
+        if (id == null) return 0;
+        int n = 0, i = id.length()-1, base = 1;
+        while (i >= 0 && Character.isDigit(id.charAt(i))) {
+            n += (id.charAt(i) - '0') * base; base *= 10; i--;
+        }
+        return n;
     }
 }
