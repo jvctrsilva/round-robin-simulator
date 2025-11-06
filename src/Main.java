@@ -36,7 +36,7 @@ public class Main {
         QuantumPolicy policy = cfg.buildPolicy();
         Scheduler scheduler = new Scheduler(clock, procs, cfg.numCores, policy);
 
-        // Conecta o servidor ao scheduler (drena buffer pendente)
+        // Conecta o servidor ao scheduler
         server.setScheduler(scheduler);
 
         // 6) Envia para o Scheduler e roda

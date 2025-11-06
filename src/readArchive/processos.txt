@@ -3,5 +3,6 @@ P1|0|24|0|PRONTO|false|0
 P2|0|3|0|PRONTO|false|0
 P3|0|3|0|PRONTO|false|0
 P4|6|8|0|PRONTO|false|0
-
-P5|2|8|0|PRONTO|true|4
+P5|2|4|0|PRONTO|false|0
+P6|2|4|0|PRONTO|false|0
+P7|3|4|0|PRONTO|false|0

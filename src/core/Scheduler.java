@@ -17,6 +17,7 @@ public class Scheduler {
     private List<ProcessData> blockedProcessesList;
     private List<ProcessData> readyProcessesList;
 
+
     private final ConcurrentLinkedQueue<ProcessData> incoming = new ConcurrentLinkedQueue<>();
     private final AtomicInteger nextPidNumber = new AtomicInteger(1); // inicia no construtor
 
@@ -45,9 +46,6 @@ public class Scheduler {
         this.readyProcessesList   = new ArrayList<>();
         this.blockedProcessesList = new ArrayList<>();
 
-        for (ProcessData p : processesList) {
-            cpuLeft.put(p.getID(), p.getExecuteTime());
-        }
         int max = 0;
         for (ProcessData p : processesList) {
             String id = p.getID();
@@ -76,8 +74,6 @@ public class Scheduler {
         while (!allDone()) {
             int t = clock.getGlobalTime();
 
-            drainIncomingQueue(t);
-
             injectArrivals(t);     // input -> ready
             tickBlocked(t);        // atualiza bloqueios e move quem terminou para ready
             assignIdleCores();     // ready -> cores ociosos (aplica CS + quantum)
@@ -100,22 +96,9 @@ public class Scheduler {
         sys.makespan = clock.getGlobalTime();
         sys.finishedCount = finished.size();
         printGantt();
-        writeReportFiles(); // <=== novo
+        writeReportFiles();
     }
 
-    // drenar a fila:
-    private void drainIncomingQueue(int tNow) {
-        boolean gotAny = false;
-        for (ProcessData p; (p = incoming.poll()) != null; ) {
-            gotAny = true;
-            processesList.add(p);
-            cpuLeft.put(p.getID(), p.getExecuteTime());
-            if (!arrivedProcesses.contains(p.getID()) && p.getEntryTime() <= tNow) {
-                arrivedProcesses.add(p.getID());
-                readyProcessesList.add(p);
-            }
-        }
-    }
 
     private boolean allDone() {
         return finished.size() == processesList.size();
@@ -151,8 +134,6 @@ public class Scheduler {
             sys.sumAssignedQuantum += q;
             sys.countAssignedQuantum++;
 
-            // contamos um despacho (start). Se quiser contar só troca real (não idle->proc),
-            // cheque lastMarkPerCore.get(core.getId()) e incremente apenas se for diferente de "--".
             sys.dispatchEvents++;
             core.start(next.getID(), q, clock.getContextSwitchCost());
             running++;
@@ -198,7 +179,7 @@ public class Scheduler {
                 }
             }
 
-            // Consome 1 de CPU restante (protege contra NPE)
+            // Consome 1 de CPU restante
             Integer cur = cpuLeft.get(pid);
             int left = (cur == null ? 0 : cur) - 1;
             cpuLeft.put(pid, left);

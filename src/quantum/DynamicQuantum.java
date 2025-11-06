@@ -2,12 +2,10 @@ package quantum;
 
 public class DynamicQuantum implements QuantumPolicy {
     private final int base;
-    private final int minQ;
     private final int maxQ;
 
     public DynamicQuantum(int base) {
         this.base = base;
-        this.minQ = 1;
         this.maxQ = base * 2;
     }
 

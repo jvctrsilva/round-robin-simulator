@@ -12,26 +12,23 @@ IO: ticks bloqueado em E/S
 Disp: numero de despachos (vezes que entrou em CPU)
 
 PID    Ai   Ci   Ri   Si   Wi   IO   Disp 
-P1     0    34   1    24   5    0    5    
+P1     0    42   1    24   12   0    6    
 P2     0    4    1    3    0    0    1    
-P3     0    11   4    3    6    0    2    
-P4     6    24   4    8    8    0    2    
-P5     2    19   3    8    3    4    2    
+P3     0    12   4    3    7    0    2    
+P4     6    26   7    8    9    0    3    
+P5     2    15   3    4    7    0    2    
+P6     2    18   5    4    10   0    2    
+P7     3    21   7    4    12   0    2    
 
 === Sumario do Sistema ===
-Makespan (tempo total): 33
-Processos finalizados : 5 / 5
-Busy ticks (CPU util) : 46
-CS ticks (overhead)   : 12
-Idle ticks            : 10
-Despachos (starts)    : 12
-Utilizacao util       : 67,65%
-Quantum medio         : 4,67 (amostras=12)
-Tempo medio resposta  : 2,60
-Tempo medio espera    : 4,40
-Turnaround medio      : 16,80
-
-Notas:
-- Q pequeno => mais CS (csTicks) => menor utilizacao e maior Wi/Ti.
-- Se custo de CS ~ Q, espere eficiencia proxima de 50%% do tempo util.
-- Q dinamico ajusta Ri/Ti conforme carga e ociosidade/I-O.
+Makespan (tempo total): 41
+Processos finalizados : 7 / 7
+Busy ticks (CPU util) : 50
+CS ticks (overhead)   : 18
+Idle ticks            : 16
+Despachos (starts)    : 18
+Utilizacao util       : 59,52%
+Quantum medio         : 3,56 (amostras=18)
+Tempo medio resposta  : 4,00
+Tempo medio espera    : 8,14
+Turnaround medio      : 17,86
